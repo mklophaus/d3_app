@@ -4,12 +4,6 @@
   <title>Document</title>
 
     <link rel="stylesheet" href="css/main.css">
-          <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-
-      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
-
-   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.js"></script>
 
 </head>
 <body ng-app="app" ng-controller="DonutChartController">
@@ -30,142 +24,13 @@
 
    </div>
 
-  <script>
-
-  var app = angular.module('app', []);
-
-  app.controller('DonutChartController', function($scope, $window){
-
-    var myData = [];
-    // $scope.charts = d3.range(10).map(function(){
-    //   return d3.range(10).map(Math.random)
-    // })
-
-    // $scope.shared = {
-    //   ourData: d3.range(10).map(Math.random)
-    //   }
-    $scope.myData = [25, 25, 25, 25, 25, 25, 25];
-    $scope.choices = [{id: 'choice1'}, {id: 'choice2'}, {id: 'choice3'}];
-
-    $scope.addNewChoice = function() {
-       var newItemNo = $scope.choices.length+1;
-       $scope.choices.push({'id':'choice'+newItemNo});
-    };
-
-    $scope.showAddChoice = function(choice) {
-      return choice.id === $scope.choices[$scope.choices.length-1].id;
-    };
-
-    $scope.submit = function(){
-      $scope.myData = [];
-      for (var i = $scope.choices.length - 1; i >= 0; i--) {
-        if($scope.choices[i].value !== undefined){
-          $scope.myData.push(parseInt($scope.choices[i].value));
-        }
-      }
-      console.log($scope.myData);
-    }
-
-    // $scope.myData = {
-    //   dataPoints: myData
-    // }
-
-    // $scope.ourData = d3.range(10).map(Math.random);
-    angular.element($window).on('resize', function(){
-      $scope.$apply();
-    })
-  })
-
-  app.directive('donutChart', function(){
-
-    function link(scope, el){
-      var data= scope.data;
-      var color = d3.scale.category10();
-      var el = el[0];
-      var width = el.clientWidth;
-      var height = el.clientHeight;
-      var min = Math.min(width, height);
-      var pie = d3.layout.pie().sort(null);
-      var arc = d3.svg.arc()
-        .outerRadius(min/2 * 0.9)
-        .innerRadius(min/2 * 0.5);
-      var svg = d3.select(el).append('svg')
-
-      var g = svg.append('g');
-
-      var arcs = g.selectAll('path');
-
-      scope.$watch(function(){
-        return el.clientWidth * el.clientHeight
-      }, function(){
-        width = el.clientWidth;
-        height = el.clientHeight;
-        min = Math.min(width, height);
-
-        arc.outerRadius(min/2 * 0.9).innerRadius(min/2 * 0.5);
-
-        svg.attr({width: width, height: height});
-
-        g.attr('transform', 'translate(' + width/2 + ',' + height/2 + ')');
-
-        arcs.attr('d', arc)
-
-      })
-
-      function arcTween(a) {
-      // see: http://bl.ocks.org/mbostock/1346410
-      var i = d3.interpolate(this._current, a);
-      this._current = i(0);
-      return function(t) {
-        return arc(i(t));
-      };
-    }
-
-    scope.$watch('data', function(data){
-      var duration = 1000
-      arcs = arcs.data(pie(data))
-      arcs.transition()
-        .duration(duration)
-        .attrTween('d', arcTween)
-
-      arcs.enter()
-        .append('path')
-        .style('stroke', 'black')
-        .attr('fill', function(d, i){ return color(i) })
-        .each(function(d) {
-          this._current = { startAngle: 2 * Math.PI - 0.001, endAngle: 2 * Math.PI }
-        })
-        .transition()
-        .duration(duration)
-        .attrTween('d', arcTween)
-
-      arcs.exit()
-        .transition()
-        .duration(duration)
-        .each(function(d){
-          d.startAngle = 2 * Math.PI - 0.001; d.endAngle = 2 * Math.PI;
-        })
-        .attrTween('d', arcTween).remove();
-    })
-
-      svg.on('mousedown', function(){
-      scope.$apply(function(){
-        var num = Math.round(Math.random()* 10) + 1
-        scope.data = d3.range(num).map(Math.random)
-      })
-    })
-
-    }
-    return {
-      link: link,
-      restrict: 'E',
-      scope: {data: '='}
-    }
-
-})
-
-  </script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.js"></script>
+    <script src="app.js"></script>
+    <script src="donut_chart_controller.js"></script>
+    <script src="d3directive.js"></script>
 
 </body>
 </html>
